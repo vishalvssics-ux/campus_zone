@@ -13,7 +13,13 @@ class ApiService {
       final response = await _dio.post(path, data: data);
       return response.data;
     } on DioException catch (e) {
-      throw e.response?.data['message'] ?? e.response?.data['error'] ?? 'Something went wrong';
+      final errorData = e.response?.data;
+      if (errorData is Map) {
+        throw errorData['message'] ?? errorData['error'] ?? 'Something went wrong';
+      } else if (errorData is List && errorData.isNotEmpty) {
+        throw errorData[0].toString();
+      }
+      throw 'Something went wrong';
     }
   }
 
@@ -22,7 +28,13 @@ class ApiService {
       final response = await _dio.get(path, queryParameters: queryParameters);
       return response.data;
     } on DioException catch (e) {
-      throw e.response?.data['message'] ?? e.response?.data['error'] ?? 'Something went wrong';
+      final errorData = e.response?.data;
+      if (errorData is Map) {
+        throw errorData['message'] ?? errorData['error'] ?? 'Something went wrong';
+      } else if (errorData is List && errorData.isNotEmpty) {
+        throw errorData[0].toString();
+      }
+      throw 'Something went wrong';
     }
   }
 }

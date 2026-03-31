@@ -9,16 +9,20 @@ class AcademicProvider extends ChangeNotifier {
   List<dynamic> _exams = [];
   List<dynamic> _marks = [];
   List<dynamic> _assignments = [];
+  List<dynamic> _timeTables = [];
   List<dynamic> _studentRequests = [];
   List<dynamic> _myStudents = [];
+  List<dynamic> _teachers = [];
 
   // Getters
   bool get isLoading => _isLoading;
   List<dynamic> get exams => _exams;
   List<dynamic> get marks => _marks;
   List<dynamic> get assignments => _assignments;
+  List<dynamic> get timeTables => _timeTables;
   List<dynamic> get studentRequests => _studentRequests;
   List<dynamic> get myStudents => _myStudents;
+  List<dynamic> get teachers => _teachers;
 
   // Generic Helper
   Future<void> _performAction(Future<void> Function() action) async {
@@ -34,10 +38,25 @@ class AcademicProvider extends ChangeNotifier {
     }
   }
 
-  // STUDNET: Get Exam Schedule
-  Future<void> fetchExamSchedule({String? studentId, String? teacherId, String semester = '1'}) async {
+  // GET All Teachers
+  Future<void> fetchTeachers() async {
     await _performAction(() async {
-      final res = await _api.get('/academic/exam-schedule', queryParameters: {
+      final res = await _api.get('/teachers');
+      _teachers = res is List ? res : [];
+    });
+  }
+
+  // STUDENT: Select Teacher
+  Future<void> selectTeacher(String studentId, String teacherId) async {
+    await _performAction(() async {
+      await _api.post('/student/select-teacher', {'studentId': studentId, 'teacherId': teacherId});
+    });
+  }
+
+  // GET Exam Schedule from Vercel
+  Future<void> fetchExamSchedule({String? studentId, String? teacherId, String semester = 'Sem-1'}) async {
+    await _performAction(() async {
+      final res = await _api.get('https://collage-backend-123.vercel.app/api/academic/exam-schedule', queryParameters: {
         if(studentId != null) 'studentId': studentId,
         if(teacherId != null) 'teacherId': teacherId,
         'semester': semester
@@ -65,6 +84,20 @@ class AcademicProvider extends ChangeNotifier {
     await _performAction(() async {
       final res = await _api.get('/academic/assignment', queryParameters: {'teacherId': teacherId});
       _assignments = res is List ? res : [];
+    });
+  }
+
+  // STUDENT: Get Time Table
+  Future<void> fetchTimeTable(String teacherId) async {
+    await _performAction(() async {
+      final res = await _api.get('/academic/timetable', queryParameters: {'teacherId': teacherId});
+      if (res is List) {
+        _timeTables = res;
+      } else if (res is Map && res['timetables'] != null) {
+        _timeTables = res['timetables'];
+      } else {
+        _timeTables = [];
+      }
     });
   }
 
@@ -98,7 +131,7 @@ class AcademicProvider extends ChangeNotifier {
   // TEACHER: Broadcast
   Future<void> sendBroadcast(String teacherId, String title, String message) async {
     await _performAction(() async {
-      await _api.post('/teacher/broadcast', {
+      await _api.post('https://collage-backend-123.vercel.app/api/teacher/broadcast', {
         'teacherId': teacherId,
         'title': title,
         'message': message
@@ -109,7 +142,7 @@ class AcademicProvider extends ChangeNotifier {
   // TEACHER: Create Assignment
   Future<void> createAssignment(Map<String, dynamic> data) async {
     await _performAction(() async {
-      await _api.post('/academic/assignment', data);
+      await _api.post('https://collage-backend-123.vercel.app/api/academic/assignment', data);
     });
   }
   
@@ -123,7 +156,14 @@ class AcademicProvider extends ChangeNotifier {
   // TEACHER: Create Exam Schedule
   Future<void> createExamSchedule(Map<String, dynamic> data) async {
      await _performAction(() async {
-      await _api.post('/academic/exam-schedule', data);
+      await _api.post('https://collage-backend-123.vercel.app/api/academic/exam-schedule', data);
+    });
+  }
+
+  // TEACHER: Create Time Table
+  Future<void> createTimeTable(Map<String, dynamic> data) async {
+    await _performAction(() async {
+      await _api.post('/academic/timetable', data);
     });
   }
 }

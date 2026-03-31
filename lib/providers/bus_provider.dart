@@ -6,14 +6,20 @@ class BusProvider extends ChangeNotifier {
   bool _isLoading = false;
   
   // Data
-  Map<String, dynamic>? _prediction;
+  dynamic _prediction;
+  dynamic _routeData;
   List<dynamic> _passengers = [];
   List<dynamic> _comingUsers = [];
+  List<dynamic> _allUsers = [];
+  List<dynamic> _roadPoints = [];
 
   bool get isLoading => _isLoading;
-  Map<String, dynamic>? get prediction => _prediction;
+  dynamic get prediction => _prediction;
+  dynamic get routeData => _routeData;
   List<dynamic> get passengers => _passengers;
   List<dynamic> get comingUsers => _comingUsers;
+  List<dynamic> get allUsers => _allUsers;
+  List<dynamic> get roadPoints => _roadPoints;
 
   Future<void> _performAction(Future<void> Function() action) async {
     _isLoading = true;
@@ -61,7 +67,7 @@ class BusProvider extends ChangeNotifier {
   // DRIVER: Trigger SOS
   Future<void> triggerSOS(String driverId, String reason, double lat, double lng) async {
      await _performAction(() async {
-      await _api.post('/bus/sos', {
+      await _api.post('https://collage-backend-123.vercel.app/api/bus/sos', {
         'driverId': driverId,
         'reason': reason,
         'lat': lat,
@@ -84,6 +90,101 @@ class BusProvider extends ChangeNotifier {
       await _api.post('/bus/add-passenger', {'driverId': driverId, 'passengerId': passengerId});
       await fetchMyPassengers(driverId); // Refresh
     });
+  }
+
+  // STUDENT: Set Daily Status
+  Future<dynamic> setDailyStatus(String userId, String status, String driverId) async {
+    dynamic res;
+    await _performAction(() async {
+      res = await _api.post('/bus/status', {
+        'userId': userId,
+        'status': status,
+        'driverId': driverId,
+      });
+    });
+    return res;
+  }
+
+  // DRIVER: Get All Users (for adding passengers)
+  Future<void> fetchAllUsers() async {
+    await _performAction(() async {
+      final res = await _api.get('/bus/all-users');
+      _allUsers = res is List ? res : [];
+    });
+  }
+
+  // STUDENT: Get My Assigned Bus/Driver
+  Future<void> fetchMyBus(String userId) async {
+    await _performAction(() async {
+      try {
+        final res = await _api.get('/bus/my-bus/$userId');
+        if (_prediction == null) {
+          _prediction = res; 
+        }
+      } catch (e) {
+        // Silently fail or set to null if not found
+        if (_prediction == null) _prediction = null;
+      }
+    });
+  }
+
+  // DRIVER: Get Optimized Route Stops
+  Future<void> fetchRoute(String driverId) async {
+    await _performAction(() async {
+      final res = await _api.get('/bus/route', queryParameters: {'driverId': driverId});
+      _routeData = res;
+      
+      // If we have stops, fetch the road-following path
+      if (res != null && res['stops'] != null) {
+        final List stops = res['stops'];
+        final start = res['start'];
+        if (stops.isNotEmpty && start != null) {
+          await fetchRoadRoute(start, stops);
+        }
+      }
+    });
+  }
+
+  // NEW: Fetch actual road-following points using OSRM
+  Future<void> fetchRoadRoute(Map<String, dynamic> start, List stops) async {
+    try {
+      // Format: lng,lat;lng,lat;...
+      String coords = '${start['lng']},${start['lat']}';
+      for (var stop in stops) {
+        if (stop['lat'] != 0 && stop['lng'] != 0) {
+          coords += ';${stop['lng']},${stop['lat']}';
+        }
+      }
+
+      final url = 'https://router.project-osrm.org/route/v1/driving/$coords?overview=full&geometries=geojson';
+      final response = await _api.get(url); // ApiService can handle full URLs if we modify it, or use direct dio
+      
+      if (response != null && response['routes'] != null && response['routes'].isNotEmpty) {
+        _roadPoints = response['routes'][0]['geometry']['coordinates'];
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('OSRM Route Fetch Failed: $e');
+      _roadPoints = []; // Fallback to straight lines (handled in UI)
+    }
+
+  }
+
+  // SHARED: Get Live Location
+  Future<Map<String, dynamic>?> getLiveLocation(String driverId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final res = await _api.get('/bus/live-location', queryParameters: {'driverId': driverId});
+      // Backend returns { status: 'ONLINE', data: { location: { lat, lng, ... } } }
+      _isLoading = false;
+      notifyListeners();
+      return res;
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
   }
 
   // DRIVER: Remove Passenger

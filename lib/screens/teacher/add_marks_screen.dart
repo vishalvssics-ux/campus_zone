@@ -54,45 +54,146 @@ class _AddMarksScreenState extends State<AddMarksScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Upload Marks')),
-      body: Consumer<AcademicProvider>(
-        builder: (context, academic, _) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+      body: Column(
+        children: [
+          // Blue Header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
+            decoration: const BoxDecoration(
+              color: Color(0xFF3F61B5),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+            child: Row(
               children: [
-                DropdownButtonFormField<String>(
-                  value: _selectedStudentId,
-                  hint: const Text('Select Student'),
-                  items: academic.myStudents.map<DropdownMenuItem<String>>((s) {
-                    return DropdownMenuItem(value: s['_id'], child: Text(s['name']));
-                  }).toList(),
-                  onChanged: (val) => setState(() => _selectedStudentId = val),
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
                 ),
-                const SizedBox(height: 16),
-                TextField(controller: _semesterCtrl, decoration: const InputDecoration(labelText: 'Semester')),
-                const SizedBox(height: 16),
-                TextField(controller: _examTypeCtrl, decoration: const InputDecoration(labelText: 'Exam Type (e.g. Midterm)')),
-                const SizedBox(height: 16),
-                TextField(controller: _subjectCtrl, decoration: const InputDecoration(labelText: 'Subject')),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(child: TextField(controller: _marksCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Marks Obtained'))),
-                    const SizedBox(width: 16),
-                    Expanded(child: TextField(controller: _totalCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Total Marks'))),
-                  ],
+                const Text(
+                  'Upload Marks',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(onPressed: _submit, child: const Text('Save Result')),
-                )
               ],
             ),
-          );
-        },
+          ),
+
+          Expanded(
+            child: Consumer<AcademicProvider>(
+              builder: (context, academic, _) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Student Performance',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF3F61B5)),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      DropdownButtonFormField<String>(
+                        value: _selectedStudentId,
+                        decoration: InputDecoration(
+                          labelText: 'Select Student',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          prefixIcon: const Icon(Icons.person_outline),
+                        ),
+                        items: academic.myStudents.map<DropdownMenuItem<String>>((s) {
+                          return DropdownMenuItem(value: s['_id'], child: Text(s['name']));
+                        }).toList(),
+                        onChanged: (val) => setState(() => _selectedStudentId = val),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _semesterCtrl,
+                              decoration: InputDecoration(
+                                labelText: 'Semester',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextField(
+                              controller: _examTypeCtrl,
+                              decoration: InputDecoration(
+                                labelText: 'Exam Type',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      TextField(
+                        controller: _subjectCtrl,
+                        decoration: InputDecoration(
+                          labelText: 'Subject',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          prefixIcon: const Icon(Icons.book_outlined),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _marksCtrl,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: 'Marks Obtained',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextField(
+                              controller: _totalCtrl,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: 'Total Marks',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF3F61B5),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          ),
+                          child: const Text('Save Result', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

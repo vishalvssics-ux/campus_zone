@@ -34,45 +34,116 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admission Requests')),
-      body: Consumer<AcademicProvider>(
-        builder: (context, academic, _) {
-          if (academic.isLoading) return const Center(child: CircularProgressIndicator());
-          
-          if (academic.studentRequests.isEmpty) {
-             return const Center(child: Text('No pending requests'));
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: academic.studentRequests.length,
-            itemBuilder: (context, index) {
-              final student = academic.studentRequests[index];
-              return FadeInUp(
-                child: Card(
-                  child: ListTile(
-                    leading: const CircleAvatar(child: Icon(Icons.person)),
-                    title: Text(student['name'] ?? 'Unknown'),
-                    subtitle: Text(student['email'] ?? ''),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.check, color: Colors.green),
-                          onPressed: () => _handleAction(student['_id'], 'accepted'),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close, color: Colors.red),
-                          onPressed: () => _handleAction(student['_id'], 'rejected'),
-                        ),
-                      ],
-                    ),
+      body: Column(
+        children: [
+          // Blue Header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
+            decoration: const BoxDecoration(
+              color: Color(0xFF3F61B5),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const Text(
+                  'Admission Requests',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              );
-            },
-          );
-        },
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: Consumer<AcademicProvider>(
+              builder: (context, academic, _) {
+                if (academic.isLoading) return const Center(child: CircularProgressIndicator());
+                
+                if (academic.studentRequests.isEmpty) {
+                   return Center(
+                     child: Column(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         Icon(Icons.person_add_disabled_outlined, size: 64, color: Colors.grey.shade300),
+                         const SizedBox(height: 16),
+                         Text('No pending requests', style: TextStyle(color: Colors.grey.shade500)),
+                       ],
+                     ),
+                   );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: academic.studentRequests.length,
+                  itemBuilder: (context, index) {
+                    final student = academic.studentRequests[index];
+                    return FadeInUp(
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                          border: Border.all(color: Colors.grey.shade100),
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: const Color(0xFF3F61B5).withOpacity(0.1),
+                              child: const Icon(Icons.person, color: Color(0xFF3F61B5)),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    student['name'] ?? 'Unknown',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  ),
+                                  Text(
+                                    student['email'] ?? '',
+                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.check_circle, color: Colors.green),
+                              onPressed: () => _handleAction(student['_id'], 'accepted'),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.cancel, color: Colors.red),
+                              onPressed: () => _handleAction(student['_id'], 'rejected'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

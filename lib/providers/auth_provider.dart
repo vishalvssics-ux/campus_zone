@@ -64,4 +64,15 @@ class AuthProvider extends ChangeNotifier {
     await prefs.clear();
     notifyListeners();
   }
+
+  Future<void> refreshProfile() async {
+    if (_user == null) return;
+    try {
+      final data = await _apiService.get('/profile/${_user!.id}');
+      _user = User.fromJson(data);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Profile refresh failed: $e');
+    }
+  }
 }

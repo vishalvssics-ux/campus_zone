@@ -19,7 +19,7 @@ class HomeRouter extends StatelessWidget {
 
     switch (user.role) {
       case 'student':
-        return const StudentDashboard();
+        return StudentDashboard();
       case 'teacher':
         return const TeacherDashboard();
       case 'driver':
