@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../providers/attendance_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class AttendanceScreen extends StatefulWidget {
   final bool showOnlyHistory;
@@ -104,7 +105,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     int absentCount = history.where((r) => r['status'] == 'absent').length;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 21, 36, 75),
+      backgroundColor:  AppTheme.primaryColor,
       body: Column(
         children: [
           // Blue Header
@@ -112,7 +113,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
             decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 21, 36, 75),
+              color: AppTheme.primaryColor,
             ),
             child: Row(
               children: [
@@ -192,7 +193,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 21, 36, 75),
+                              color: AppTheme.primaryColor,
                             ),
                           ),
                           Text(
@@ -237,7 +238,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             decoration: BoxDecoration(
                               color: bgColor,
                               borderRadius: BorderRadius.circular(10),
-                              border: day == now.day ? Border.all(color: const Color.fromARGB(255, 21, 36, 75), width: 1) : null,
+                              border: day == now.day ? Border.all(color: AppTheme.primaryColor, width: 1) : null,
                             ),
                             child: Text(
                               day.toString(),
@@ -261,7 +262,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 21, 36, 75),
+                              color: AppTheme.primaryColor,
                             ),
                           ),
                           Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -40,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'Profile',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color(0xFF3F61B5),
+        backgroundColor:  AppTheme.primaryColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -66,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: double.infinity,
             padding: const EdgeInsets.only(bottom: 30),
             decoration: const BoxDecoration(
-              color: Color(0xFF3F61B5),
+              color: AppTheme.primaryColor,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
@@ -77,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.person, size: 60, color: Color(0xFF3F61B5)),
+                  child: Icon(Icons.person, size: 60, color: AppTheme.primaryColor),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -156,10 +157,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFF3F61B5).withOpacity(0.1),
+              color:  AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFF3F61B5), size: 24),
+            child: Icon(icon, color:  AppTheme.primaryColor, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -180,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF15244B),
+                    color: AppTheme.primaryColor,
                   ),
                 ),
               ],

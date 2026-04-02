@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../providers/bus_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class TripScreen extends StatefulWidget {
   const TripScreen({super.key});
@@ -12,8 +13,31 @@ class TripScreen extends StatefulWidget {
   State<TripScreen> createState() => _TripScreenState();
 }
 
-class _TripScreenState extends State<TripScreen> {
+class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateMixin {
   bool _isActionLoading = false;
+  late AnimationController _pulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = Provider.of<AuthProvider>(context, listen: false).user;
+      if (user != null) {
+        Provider.of<BusProvider>(context, listen: false).syncTripStatus(user.id);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   Future<Position?> _getCurrentLocation() async {
     bool serviceEnabled;
@@ -48,14 +72,15 @@ class _TripScreenState extends State<TripScreen> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void _toggleTrip(bool start) async {
+  void _onTogglePressed(bool currentActive) async {
     final user = Provider.of<AuthProvider>(context, listen: false).user;
     if (user == null) return;
 
     setState(() => _isActionLoading = true);
 
     try {
-      if (start) {
+      if (!currentActive) {
+        // Start Trip
         final position = await _getCurrentLocation();
         if (position != null) {
           await Provider.of<BusProvider>(context, listen: false)
@@ -67,10 +92,11 @@ class _TripScreenState extends State<TripScreen> {
           }
         }
       } else {
+        // Stop Trip
         await Provider.of<BusProvider>(context, listen: false).endTrip(user.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Trip Ended Successfully!'), backgroundColor: Colors.orange),
+            const SnackBar(content: Text('Trip Stopped Successfully!'), backgroundColor: Colors.orange),
           );
         }
       }
@@ -90,9 +116,9 @@ class _TripScreenState extends State<TripScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF3F61B5),
+      backgroundColor: AppTheme.primaryColor,
       appBar: AppBar(
-        title: const Text('Trip Control', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('Live Trip Control', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -114,28 +140,75 @@ class _TripScreenState extends State<TripScreen> {
                   topRight: Radius.circular(30),
                 ),
               ),
-              child: _isActionLoading 
-                ? const Center(child: CircularProgressIndicator())
-                : Column(
+              child: Consumer<BusProvider>(
+                builder: (context, bus, _) {
+                  final isActive = bus.isTripActive;
+                  final mainColor = isActive ? Colors.red : Colors.green;
+                  final actionText = isActive ? 'STOP TRIP' : 'START TRIP';
+                  final statusText = isActive ? 'Live Tracking Active' : 'System Ready';
+                  final icon = isActive ? Icons.stop_rounded : Icons.play_arrow_rounded;
+
+                  return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildTripAction(
-                        title: 'START TRIP',
-                        subtitle: 'Tap to begin live tracking and arrival predictions',
-                        icon: Icons.play_arrow_rounded,
-                        color: Colors.green,
-                        isStart: true,
+                      // Active Status Label
+                      FadeInDown(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: mainColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: mainColor,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                statusText.toUpperCase(),
+                                style: TextStyle(
+                                  color: mainColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  letterSpacing: 1.1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 48),
-                      _buildTripAction(
-                        title: 'END TRIP',
-                        subtitle: 'Tap to stop live tracking and complete the shift',
-                        icon: Icons.stop_rounded,
-                        color: Colors.red,
-                        isStart: false,
+                      const SizedBox(height: 60),
+
+                      // Central Action Button
+                      _buildToggleButton(isActive, mainColor, icon),
+
+                      const SizedBox(height: 60),
+
+                      // Instructions
+                      FadeInUp(
+                        child: Text(
+                          isActive 
+                            ? 'Tap the button to complete your current shift and stop live location sharing.'
+                            : 'Tap the button below to start sharing your live location with students.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
+                        ),
                       ),
                     ],
-                  ),
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -143,73 +216,59 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
-  Widget _buildTripAction({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required bool isStart,
-  }) {
-    final size = isStart ? 200.0 : 160.0;
-    
-    return FadeInUp(
-      delay: Duration(milliseconds: isStart ? 0 : 200),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () => _toggleTrip(isStart),
-            child: Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-                border: Border.all(color: color.withOpacity(0.3), width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: color.withOpacity(0.1),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  )
-                ],
-              ),
-              child: Center(
-                child: Container(
-                  width: size * 0.7,
-                  height: size * 0.7,
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
+  Widget _buildToggleButton(bool isActive, Color color, IconData icon) {
+    return _isActionLoading 
+      ? const Center(child: CircularProgressIndicator())
+      : ZoomIn(
+          child: ScaleTransition(
+            scale: Tween(begin: 1.0, end: 1.05).animate(
+              CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+            ),
+            child: GestureDetector(
+              onTap: () => _onTogglePressed(isActive),
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color.withOpacity(0.15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(0.3),
+                      blurRadius: 30,
+                      spreadRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(icon, color: Colors.white, size: 50),
+                        const SizedBox(height: 8),
+                        Text(
+                          isActive ? 'STOP' : 'START',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Icon(icon, color: Colors.white, size: size * 0.35),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: TextStyle(
-              color: color,
-              fontSize: isStart ? 24 : 18,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        );
   }
 }

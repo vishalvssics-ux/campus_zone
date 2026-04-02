@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/bus_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class BusAttendanceScreen extends StatefulWidget {
   const BusAttendanceScreen({super.key});
@@ -101,7 +102,7 @@ class _BusAttendanceScreenState extends State<BusAttendanceScreen> {
     final prediction = busProvider.prediction;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF3F61B5),
+      backgroundColor:  AppTheme.primaryColor,
       appBar: AppBar(
         title: const Text('Bus Attendance', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
@@ -132,7 +133,7 @@ class _BusAttendanceScreenState extends State<BusAttendanceScreen> {
                       children: [
                         const Text(
                           'Daily Bus Status',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF3F61B5)),
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                         ),
                         const SizedBox(height: 8),
                         const Text(
@@ -254,7 +255,7 @@ class _BusAttendanceScreenState extends State<BusAttendanceScreen> {
         ),
         child: const Text(
           'Note: Detailed trip tracking (ETA/Distance) will appear once the driver starts the trip.',
-          style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Color(0xFF3F61B5)),
+          style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: AppTheme.primaryColor),
         ),
       );
     }

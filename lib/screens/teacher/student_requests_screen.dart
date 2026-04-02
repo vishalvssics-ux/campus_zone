@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class StudentRequestsScreen extends StatefulWidget {
   const StudentRequestsScreen({super.key});
@@ -41,7 +42,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
             decoration: const BoxDecoration(
-              color: Color(0xFF3F61B5),
+              color: AppTheme.primaryColor,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
@@ -107,8 +108,8 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
                         child: Row(
                           children: [
                             CircleAvatar(
-                              backgroundColor: const Color(0xFF3F61B5).withOpacity(0.1),
-                              child: const Icon(Icons.person, color: Color(0xFF3F61B5)),
+                              backgroundColor:  AppTheme.primaryColor.withOpacity(0.1),
+                              child: const Icon(Icons.person, color: AppTheme.primaryColor),
                             ),
                             const SizedBox(width: 16),
                             Expanded(

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class TimeTableScreen extends StatefulWidget {
   const TimeTableScreen({super.key});
@@ -34,7 +35,7 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF3F61B5),
+      backgroundColor:  AppTheme.primaryColor,
       appBar: AppBar(
         title: const Text('Exam Schedule', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
@@ -117,7 +118,7 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(exam['subject'] ?? 'Subject', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF15244B))),
+                                            Text(exam['subject'] ?? 'Subject', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
                                             Text(exam['date'] ?? 'TBD', style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w500)),
                                           ],
                                         ),
@@ -154,7 +155,7 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
         Icon(icon, size: 16, color: Colors.grey.shade400),
         const SizedBox(width: 8),
         Text('$label: ', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF15244B))),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.primaryColor)),
       ],
     );
   }

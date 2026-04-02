@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class MarksScreen extends StatefulWidget {
   final String? studentId;
@@ -30,7 +31,7 @@ class _MarksScreenState extends State<MarksScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF3F61B5),
+      backgroundColor:  AppTheme.primaryColor,
       appBar: AppBar(
         title: const Text('My Results', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
@@ -139,7 +140,7 @@ class _MarksScreenState extends State<MarksScreen> {
                                     children: [
                                       Text(
                                         result['subject'] ?? 'Subject',
-                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF15244B)),
+                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(

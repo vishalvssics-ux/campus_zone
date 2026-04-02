@@ -4,6 +4,7 @@ import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:animate_do/animate_do.dart';
 import '../student/marks_screen.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 class MyClassListScreen extends StatefulWidget {
   const MyClassListScreen({super.key});
 
@@ -31,7 +32,7 @@ class _MyClassListScreenState extends State<MyClassListScreen> {
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
             decoration: const BoxDecoration(
-              color: Color(0xFF3F61B5),
+              color: AppTheme.primaryColor,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
@@ -105,10 +106,10 @@ class _MyClassListScreenState extends State<MyClassListScreen> {
                           },
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                           leading: CircleAvatar(
-                            backgroundColor: const Color(0xFF3F61B5).withOpacity(0.1),
+                            backgroundColor:  AppTheme.primaryColor.withOpacity(0.1),
                             child: Text(
                               s['name']?[0] ?? '?',
-                              style: const TextStyle(color: Color(0xFF3F61B5), fontWeight: FontWeight.bold),
+                              style: const TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
                             ),
                           ),
                           title: Text(s['name'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.bold)),

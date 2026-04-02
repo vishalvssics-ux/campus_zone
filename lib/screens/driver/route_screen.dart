@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import '../../providers/bus_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class RouteScreen extends StatefulWidget {
   const RouteScreen({super.key});
@@ -86,7 +87,7 @@ class _RouteScreenState extends State<RouteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF3F61B5),
+      backgroundColor:  AppTheme.primaryColor,
       appBar: AppBar(
         title: const Text('Route Overview', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
@@ -153,7 +154,7 @@ class _RouteScreenState extends State<RouteScreen> {
                       markers.add(Marker(
                         point: _currentPosition!,
                         width: 50, height: 50,
-                        child: const Icon(Icons.directions_bus, color: Color(0xFF3F61B5), size: 35),
+                        child: const Icon(Icons.directions_bus, color: AppTheme.primaryColor, size: 35),
                       ));
                     }
 
@@ -211,7 +212,7 @@ class _RouteScreenState extends State<RouteScreen> {
                               PolylineLayer(polylines: [
                                 Polyline(
                                   points: polyPoints,
-                                  color: const Color(0xFF3F61B5),
+                                  color:  AppTheme.primaryColor,
                                   strokeWidth: 5.0,
                                   borderColor: Colors.white,
                                   borderStrokeWidth: 1.0,
@@ -233,7 +234,7 @@ class _RouteScreenState extends State<RouteScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.alt_route, color: Color(0xFF3F61B5)),
+                                  const Icon(Icons.alt_route, color: AppTheme.primaryColor),
                                   const SizedBox(width: 12),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,

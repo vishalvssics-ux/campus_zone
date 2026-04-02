@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class CreateExamScheduleScreen extends StatefulWidget {
   const CreateExamScheduleScreen({super.key});
@@ -18,6 +19,7 @@ class _CreateExamScheduleScreenState extends State<CreateExamScheduleScreen> {
   final _startTimeCtrl = TextEditingController();
   final _endTimeCtrl = TextEditingController();
   final _semesterCtrl = TextEditingController(text: 'Sem-1');
+  bool _isLoading = false;
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
@@ -82,6 +84,7 @@ class _CreateExamScheduleScreenState extends State<CreateExamScheduleScreen> {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final user = auth.user;
     if (user != null) {
+      setState(() => _isLoading = true);
       try {
         await Provider.of<AcademicProvider>(context, listen: false).createExamSchedule({
           'teacherId': user.id,
@@ -91,7 +94,10 @@ class _CreateExamScheduleScreenState extends State<CreateExamScheduleScreen> {
         if(mounted) Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exam Schedule Published & Emailed!'), backgroundColor: Colors.green));
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.black));
+        if(mounted){
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.black));
+        }
       }
     }
   }
@@ -106,7 +112,7 @@ class _CreateExamScheduleScreenState extends State<CreateExamScheduleScreen> {
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
             decoration: const BoxDecoration(
-              color: Color(0xFF3F61B5),
+              color: AppTheme.primaryColor,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
@@ -138,7 +144,7 @@ class _CreateExamScheduleScreenState extends State<CreateExamScheduleScreen> {
                 children: [
                    const Text(
                      'Academic Info',
-                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF3F61B5)),
+                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                    ),
                    const SizedBox(height: 16),
                    TextField(
@@ -212,7 +218,7 @@ class _CreateExamScheduleScreenState extends State<CreateExamScheduleScreen> {
                            child: ElevatedButton(
                              onPressed: _addExam,
                              style: ElevatedButton.styleFrom(
-                               backgroundColor: const Color(0xFF3F61B5),
+                               backgroundColor:  AppTheme.primaryColor,
                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                padding: const EdgeInsets.symmetric(vertical: 12),
                              ),
@@ -250,12 +256,14 @@ class _CreateExamScheduleScreenState extends State<CreateExamScheduleScreen> {
                        width: double.infinity,
                        height: 56,
                        child: ElevatedButton(
-                         onPressed: _publish,
+                         onPressed: _isLoading ? null : _publish,
                          style: ElevatedButton.styleFrom(
                            backgroundColor: Colors.green,
                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                          ),
-                         child: const Text('Publish & Email Students', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                         child: _isLoading 
+                             ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                             : const Text('Publish & Email Students', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                        ),
                      )
                    ]

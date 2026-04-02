@@ -12,14 +12,17 @@ class BusProvider extends ChangeNotifier {
   List<dynamic> _comingUsers = [];
   List<dynamic> _allUsers = [];
   List<dynamic> _roadPoints = [];
+  bool _isTripActive = false;
 
   bool get isLoading => _isLoading;
+  bool get isTripActive => _isTripActive;
   dynamic get prediction => _prediction;
   dynamic get routeData => _routeData;
   List<dynamic> get passengers => _passengers;
   List<dynamic> get comingUsers => _comingUsers;
   List<dynamic> get allUsers => _allUsers;
   List<dynamic> get roadPoints => _roadPoints;
+
 
   Future<void> _performAction(Future<void> Function() action) async {
     _isLoading = true;
@@ -54,6 +57,7 @@ class BusProvider extends ChangeNotifier {
         'lat': lat,
         'lng': lng
       });
+      _isTripActive = true;
     });
   }
 
@@ -61,7 +65,21 @@ class BusProvider extends ChangeNotifier {
   Future<void> endTrip(String driverId) async {
      await _performAction(() async {
       await _api.post('/bus/end-trip', {'driverId': driverId});
+      _isTripActive = false;
     });
+  }
+
+  // SHARED: Sync/Check if Trip is currently active
+  Future<void> syncTripStatus(String driverId) async {
+    try {
+      final res = await _api.get('/bus/live-location', queryParameters: {'driverId': driverId});
+      // If status is ONLINE, trip is active
+      _isTripActive = res != null && res['status'] == 'ONLINE';
+      notifyListeners();
+    } catch (e) {
+      _isTripActive = false;
+      notifyListeners();
+    }
   }
 
   // DRIVER: Trigger SOS

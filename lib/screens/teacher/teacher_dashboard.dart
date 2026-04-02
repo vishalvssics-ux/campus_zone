@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
+
 import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
-import 'package:animate_do/animate_do.dart';
+import '../../utils/app_theme.dart';
+
 import 'student_requests_screen.dart';
 import 'broadcast_screen.dart';
 import 'my_class_list_screen.dart';
@@ -41,19 +45,34 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     final academic = context.watch<AcademicProvider>();
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Blue Header
+            // Elegant Gradient Header
             Container(
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(24, 60, 24, 40),
-              decoration: const BoxDecoration(
-                color: Color(0xFF3F61B5),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppTheme.primaryColor,
+                    const Color(0xFF0F172A),
+                  ],
                 ),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
               child: Stack(
                 children: [
@@ -66,61 +85,80 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
                             },
-                            child: const CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Colors.white24,
-                              child: Icon(Icons.person, color: Colors.white),
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: AppTheme.secondaryColor.withOpacity(0.5), width: 2),
+                              ),
+                              child: const CircleAvatar(
+                                radius: 24,
+                                backgroundColor: Colors.white24,
+                                child: Icon(Icons.person_outline, color: Colors.white),
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 10,),
-                          Text(
-                            'Hi ${user?.name ?? 'Faculty'}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Welcome,',
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                user?.name ?? 'Faculty',
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                         
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 16),
                       Text(
-                        'Senior Professor | Dept of CS',
-                        style: TextStyle(
+                        'Senior Professor • Dept of CS',
+                        style: GoogleFonts.outfit(
                           color: Colors.white.withOpacity(0.8),
                           fontSize: 14,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white.withOpacity(0.2)),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Session 2023-24',
-                          style: TextStyle(color: Colors.white, fontSize: 12),
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      
-                      const SizedBox(width: 10),
-                      IconButton(
-                        icon: const Icon(Icons.logout, color: Colors.white),
-                        onPressed: () {
-                          context.read<AuthProvider>().logout();
-                          Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-                        },
-                      ),
-                    ],
+                  Positioned(
+                    right: 0,
+                    top: 10,
+                    child: IconButton(
+                      icon: const Icon(Icons.logout_rounded, color: Colors.white70),
+                      onPressed: () {
+                        context.read<AuthProvider>().logout();
+                        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                      },
+                    ),
                   ),
-                  
                 ],
               ),
             ),
@@ -130,23 +168,23 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Summary Card for Requests
+                  // Actionable Summary Card
                   _buildSummaryCard(
                     context,
                     'Pending Requests',
                     '${academic.studentRequests.length}',
-                    Icons.person_add_alt_1,
-                    Colors.orange,
+                    Icons.how_to_reg_rounded,
+                    const Color(0xFFF59E0B), // Orange-ish
                     () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StudentRequestsScreen())),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
-                  const Text(
+                  Text(
                     'Academic Management',
-                    style: TextStyle(
+                    style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF3F61B5),
+                      color: AppTheme.textDarkColor,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -158,20 +196,21 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
-                    childAspectRatio: 1.1,
+                    childAspectRatio: 1.05,
                     children: [
-                      _buildMenuCard(context, 'Attendance', Icons.person_add_alt_1, Colors.blue),
-                      _buildMenuCard(context, 'Class Broadcast', Icons.campaign_rounded, Colors.indigo),
-                      _buildMenuCard(context, 'My Class List', Icons.groups_rounded, Colors.blue),
-                      _buildMenuCard(context, 'Post Exam Schedule', Icons.grid_view_rounded, Colors.indigo),
-                      _buildMenuCard(context, 'Add Student Marks', Icons.add_chart_rounded, Colors.blue),
-                      _buildMenuCard(context, 'Create Assignment', Icons.note_add_rounded, Colors.indigo),
-                      _buildMenuCard(context, 'Time Table', Icons.calendar_month_outlined, Colors.blue),
-                      _buildMenuCard(context, 'Bus Attendance', Icons.directions_bus, Colors.indigo),
-                      _buildMenuCard(context, 'Bus Tracking', Icons.add_location_alt, Colors.blue),
-                      _buildMenuCard(context, 'Live Class Attendance', Icons.video_camera_front, Colors.indigo),
+                      _buildMenuCard(context, 'Attendance', Icons.person_add_alt_1_rounded, AppTheme.secondaryColor, 0),
+                      _buildMenuCard(context, 'Live Class Attd', Icons.video_camera_front_rounded, const Color(0xFF10B981), 50),
+                      _buildMenuCard(context, 'Broadcast', Icons.campaign_rounded, const Color(0xFF8B5CF6), 100),
+                      _buildMenuCard(context, 'Class List', Icons.groups_rounded, const Color(0xFF0EA5E9), 150),
+                      _buildMenuCard(context, 'Date Sheet', Icons.grid_view_rounded, AppTheme.secondaryColor, 200),
+                      _buildMenuCard(context, 'Add Marks', Icons.add_chart_rounded, const Color(0xFFF59E0B), 250),
+                      _buildMenuCard(context, 'Assignments', Icons.note_add_rounded, const Color(0xFF8B5CF6), 300),
+                      _buildMenuCard(context, 'Time Table', Icons.calendar_month_rounded, const Color(0xFF10B981), 350),
+                      _buildMenuCard(context, 'Bus Attend', Icons.directions_bus_rounded, const Color(0xFF0EA5E9), 400),
+                      _buildMenuCard(context, 'Live Bus', Icons.add_location_alt_rounded, const Color(0xFFEF4444), 450),
                     ],
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -182,93 +221,116 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   }
 
   Widget _buildSummaryCard(BuildContext context, String label, String value, IconData icon, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.2)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(15),
+    return FadeInUp(
+      duration: const Duration(milliseconds: 400),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
-              child: Icon(icon, color: color),
-            ),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+            ],
+            border: Border.all(color: color.withOpacity(0.1), width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
                 ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: color.withOpacity(0.8),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    value,
+                    style: GoogleFonts.outfit(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textDarkColor,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Icon(Icons.arrow_forward_ios, size: 16, color: color),
-          ],
+                  Text(
+                    label,
+                    style: GoogleFonts.outfit(
+                      color: Colors.grey.shade600,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Icon(Icons.arrow_forward_ios_rounded, size: 16, color: color.withOpacity(0.5)),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMenuCard(BuildContext context, String title, IconData icon, Color color) {
+  Widget _buildMenuCard(BuildContext context, String title, IconData icon, Color primaryIconColor, int delayMs) {
     return FadeInUp(
+      delay: Duration(milliseconds: delayMs),
+      duration: const Duration(milliseconds: 500),
       child: GestureDetector(
         onTap: () {
           if (title == 'Attendance') Navigator.push(context, MaterialPageRoute(builder: (_) => const AttendanceScreen()));
-          if (title == 'Student Requests') Navigator.push(context, MaterialPageRoute(builder: (_) => const StudentRequestsScreen()));
-          if (title == 'Class Broadcast') Navigator.push(context, MaterialPageRoute(builder: (_) => const BroadcastScreen()));
-          if (title == 'My Class List') Navigator.push(context, MaterialPageRoute(builder: (_) => const MyClassListScreen()));
-          if (title == 'Post Exam Schedule') Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateExamScheduleScreen()));
-          if (title == 'Add Student Marks') Navigator.push(context, MaterialPageRoute(builder: (_) => const AddMarksScreen()));
-          if (title == 'Create Assignment') Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateAssignmentScreen()));
-          if (title == 'Time Table') Navigator.push(context, MaterialPageRoute(builder: (_) => const TimeTableScreen()));
-          if (title == 'Bus Attendance') Navigator.push(context, MaterialPageRoute(builder: (_) => const BusAttendanceScreen()));
-          if (title == 'Bus Tracking') Navigator.push(context, MaterialPageRoute(builder: (_) => const BusTrackingScreen()));
-          if (title == 'Live Class Attendance') Navigator.push(context, MaterialPageRoute(builder: (_) => const LiveClassAttendanceScreen()));
+          else if (title == 'Class Broadcast') Navigator.push(context, MaterialPageRoute(builder: (_) => const BroadcastScreen()));
+          else if (title == 'Class List') Navigator.push(context, MaterialPageRoute(builder: (_) => const MyClassListScreen()));
+          else if (title == 'Date Sheet') Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateExamScheduleScreen()));
+          else if (title == 'Add Marks') Navigator.push(context, MaterialPageRoute(builder: (_) => const AddMarksScreen()));
+          else if (title == 'Assignments') Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateAssignmentScreen()));
+          else if (title == 'Time Table') Navigator.push(context, MaterialPageRoute(builder: (_) => const TimeTableScreen()));
+          else if (title == 'Bus Attend') Navigator.push(context, MaterialPageRoute(builder: (_) => const BusAttendanceScreen()));
+          else if (title == 'Live Bus') Navigator.push(context, MaterialPageRoute(builder: (_) => const BusTrackingScreen()));
+          else if (title == 'Live Class Attd') Navigator.push(context, MaterialPageRoute(builder: (_) => const LiveClassAttendanceScreen()));
+          else if (title == 'Broadcast') Navigator.push(context, MaterialPageRoute(builder: (_) => const BroadcastScreen()));
         },
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
               ),
             ],
+            // Subtle border for clear separation
+            border: Border.all(color: Colors.grey.shade100, width: 1.5),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 32, color: const Color(0xFF3F61B5)),
-              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: primaryIconColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 32, color: primaryIconColor),
+              ),
+              const SizedBox(height: 16),
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w600,
                   fontSize: 13,
+                  color: AppTheme.textDarkColor,
                 ),
               ),
             ],

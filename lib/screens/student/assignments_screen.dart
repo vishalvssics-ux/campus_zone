@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class AssignmentsScreen extends StatefulWidget {
   const AssignmentsScreen({super.key});
@@ -29,7 +30,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF3F61B5),
+      backgroundColor:  AppTheme.primaryColor,
       appBar: AppBar(
         title: const Text('Assignments', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
@@ -115,7 +116,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                                       Expanded(
                                         child: Text(
                                           assign['topic'] ?? 'No Topic',
-                                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF15244B)),
+                                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                                         ),
                                       ),
                                       Container(

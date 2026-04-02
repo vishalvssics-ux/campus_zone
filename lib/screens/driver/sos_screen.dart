@@ -4,6 +4,7 @@ import '../../providers/bus_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class SOSScreen extends StatefulWidget {
   const SOSScreen({super.key});
@@ -104,7 +105,7 @@ class _SOSScreenState extends State<SOSScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF3F61B5),
+      backgroundColor:  AppTheme.primaryColor,
       appBar: AppBar(
         title: const Text('Emergency SOS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
@@ -134,7 +135,7 @@ class _SOSScreenState extends State<SOSScreen> {
                     const SizedBox(height: 40),
                     const Text(
                       'Security Protocol',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF3F61B5)),
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                     ),
                     const SizedBox(height: 12),
                     Text(

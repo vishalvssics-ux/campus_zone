@@ -7,6 +7,7 @@ import 'dart:async';
 import '../../providers/bus_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/user.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class BusStatusScreen extends StatefulWidget {
   const BusStatusScreen({super.key});
@@ -71,7 +72,7 @@ class _BusStatusScreenState extends State<BusStatusScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bus Status & Tracking'),
-        backgroundColor: const Color(0xFF3F61B5),
+        backgroundColor:  AppTheme.primaryColor,
         foregroundColor: Colors.white,
       ),
       body: Consumer<BusProvider>(
@@ -106,7 +107,7 @@ class _BusStatusScreenState extends State<BusStatusScreen> {
               children: [
                 const Text(
                   'Daily Bus Status',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF15244B)),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                 ),
                 const SizedBox(height: 12),
                 _buildBusStatusCard(context, bus, user!.id, pred['driverId'] ?? ''),
@@ -114,7 +115,7 @@ class _BusStatusScreenState extends State<BusStatusScreen> {
 
                 const Text(
                   'Live Bus Tracking',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF15244B)),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                 ),
                 const SizedBox(height: 12),
                 _buildLiveTrackingCard(pred, bus),

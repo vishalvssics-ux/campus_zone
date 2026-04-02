@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class CreateTimeTableScreen extends StatefulWidget {
   const CreateTimeTableScreen({super.key});
@@ -15,6 +16,7 @@ class _CreateTimeTableScreenState extends State<CreateTimeTableScreen> {
   final _roomCtrl = TextEditingController();
   final _timeCtrl = TextEditingController();
   String _selectedDay = 'Monday';
+  bool _isLoading = false;
 
   final List<String> _days = [
     'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
@@ -40,6 +42,7 @@ class _CreateTimeTableScreenState extends State<CreateTimeTableScreen> {
         return;
       }
 
+      setState(() => _isLoading = true);
       try {
         await Provider.of<AcademicProvider>(context, listen: false).createTimeTable({
           'teacherId': user.id,
@@ -49,10 +52,16 @@ class _CreateTimeTableScreenState extends State<CreateTimeTableScreen> {
           'time': _timeCtrl.text,
           'room': _roomCtrl.text,
         });
-        if (mounted) Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Time Table Entry Added!')));
+        if (mounted) {
+           setState(() => _isLoading = false);
+           Navigator.pop(context);
+           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Time Table Entry Added!')));
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        if (mounted) {
+           setState(() => _isLoading = false);
+           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
       }
     }
   }
@@ -67,7 +76,7 @@ class _CreateTimeTableScreenState extends State<CreateTimeTableScreen> {
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
             decoration: const BoxDecoration(
-              color: Color(0xFF3F61B5),
+              color: AppTheme.primaryColor,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
@@ -99,7 +108,7 @@ class _CreateTimeTableScreenState extends State<CreateTimeTableScreen> {
                 children: [
                   const Text(
                     'Entry Details',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF3F61B5)),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                   ),
                   const SizedBox(height: 24),
 
@@ -155,12 +164,14 @@ class _CreateTimeTableScreenState extends State<CreateTimeTableScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: _post,
+                      onPressed: _isLoading ? null : _post,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3F61B5),
+                        backgroundColor:  AppTheme.primaryColor,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
-                      child: const Text('Add Entry', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      child: _isLoading 
+                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : const Text('Add Entry', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                     ),
                   )
                 ],

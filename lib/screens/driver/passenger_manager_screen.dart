@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../providers/bus_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class PassengerManagerScreen extends StatefulWidget {
   const PassengerManagerScreen({super.key});
@@ -75,7 +76,7 @@ class _PassengerManagerScreenState extends State<PassengerManagerScreen> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: const Color(0xFF3F61B5),
+        backgroundColor:  AppTheme.primaryColor,
         appBar: AppBar(
           title: const Text('Manage Passengers', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           backgroundColor: Colors.transparent,
@@ -230,8 +231,8 @@ class _PassengerManagerScreenState extends State<PassengerManagerScreen> {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: const Color(0xFF3F61B5).withOpacity(0.1),
-            child: Text(name[0], style: const TextStyle(color: Color(0xFF3F61B5), fontWeight: FontWeight.bold)),
+            backgroundColor:  AppTheme.primaryColor.withOpacity(0.1),
+            child: Text(name[0], style: const TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 16),
           Expanded(

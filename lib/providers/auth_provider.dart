@@ -75,4 +75,52 @@ class AuthProvider extends ChangeNotifier {
       debugPrint('Profile refresh failed: $e');
     }
   }
+
+  // --- Password Reset Flow ---
+  
+  Future<void> forgotPassword(String email) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _apiService.post('https://collage-backend-123.vercel.app/api/forgot-password', {'email': email});
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> verifyOTP(String email, String otp) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _apiService.post('https://collage-backend-123.vercel.app/api/verify-otp', {'email': email, 'otp': otp});
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> resetPassword(String email, String otp, String newPassword) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _apiService.post('https://collage-backend-123.vercel.app/api/reset-password', {
+        'email': email,
+        'otp': otp,
+        'newPassword': newPassword
+      });
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+  }
 }

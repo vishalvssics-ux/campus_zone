@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/attendance_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class LiveClassAttendanceScreen extends StatefulWidget {
   const LiveClassAttendanceScreen({super.key});
@@ -28,7 +29,7 @@ class _LiveClassAttendanceScreenState extends State<LiveClassAttendanceScreen> {
     final data = attendance.liveClassData;
     
     return Scaffold(
-      backgroundColor: const Color(0xFF3F61B5),
+      backgroundColor:  AppTheme.primaryColor,
       body: Column(
         children: [
           // Blue Header
@@ -103,7 +104,7 @@ class _LiveClassAttendanceScreenState extends State<LiveClassAttendanceScreen> {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF15244B),
+            color: AppTheme.primaryColor,
           ),
         ),
         const SizedBox(height: 16),

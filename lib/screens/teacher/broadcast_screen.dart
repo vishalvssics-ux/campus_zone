@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/academic_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:campus_zone_user/utils/app_theme.dart';
 
 class BroadcastScreen extends StatefulWidget {
   const BroadcastScreen({super.key});
@@ -13,17 +14,22 @@ class BroadcastScreen extends StatefulWidget {
 class _BroadcastScreenState extends State<BroadcastScreen> {
   final _titleController = TextEditingController();
   final _msgController = TextEditingController();
+  bool _isLoading = false;
 
   void _send() async {
     final user = Provider.of<AuthProvider>(context, listen: false).user;
     if (user != null) {
+      setState(() => _isLoading = true);
       try {
         await Provider.of<AcademicProvider>(context, listen: false)
             .sendBroadcast(user.id, _titleController.text, _msgController.text);
         if(mounted) Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Broadcast Sent!')));
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        if(mounted){
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
       }
     }
   }
@@ -38,7 +44,7 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 60, 24, 30),
             decoration: const BoxDecoration(
-              color: Color(0xFF3F61B5),
+              color: AppTheme.primaryColor,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
@@ -70,7 +76,7 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
                 children: [
                   const Text(
                     'Create Notification',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF3F61B5)),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -104,13 +110,15 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton.icon(
-                      onPressed: _send,
+                      onPressed: _isLoading ? null : _send,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3F61B5),
+                        backgroundColor: AppTheme.primaryColor,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
                       icon: const Icon(Icons.send, color: Colors.white),
-                      label: const Text('Send Broadcast', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      label: _isLoading
+                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : const Text('Send Broadcast', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     ),
                   )
                 ],

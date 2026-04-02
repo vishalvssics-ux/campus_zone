@@ -1,7 +1,9 @@
 import 'package:campus_zone_user/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../../widgets/campus_logo.dart';
+import '../../utils/app_theme.dart';
+import 'package:animate_do/animate_do.dart';
 
 class OnBoardScreen extends StatefulWidget {
   const OnBoardScreen({super.key});
@@ -13,126 +15,140 @@ class OnBoardScreen extends StatefulWidget {
 class _OnBoardScreenState extends State<OnBoardScreen> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Stack(
-          children: [
-          
-            Positioned.fill(
-              child: Image.asset("assets/onboard.png", fit: BoxFit.cover),
-            ),
-         
-            Positioned.fill(
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black54, 
-                      Colors.black87,
-                    ],
-                    stops: [0.4, 0.7, 1.0], 
-                  ),
+    return Scaffold(
+      backgroundColor: AppTheme.primaryColor,
+      body: Stack(
+        children: [
+          // Background Gradient Pattern
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppTheme.primaryColor,
+                    const Color(0xFF0F172A),
+                  ],
                 ),
               ),
             ),
-           
-            Padding(
-              padding: const EdgeInsets.all(20.0),
+          ),
+          // Subtle glow effects
+          Positioned(
+            top: -100,
+            left: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.secondaryColor.withOpacity(0.1),
+                backgroundBlendMode: BlendMode.screen,
+              ),
+            ),
+          ),
+
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-           
-                  const SizedBox(height: 30),
-                
-                  const Spacer(), 
-                  const Text(
-                    'Campus Zone',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Campus Zone is a dedicated area within a college or university designed to support academic, social, and extracurricular activities of students. It typically includes classrooms, labs, libraries, common areas',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-               
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        
-                        print('Get Started tapped!');
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero, 
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        shadowColor: Colors.transparent,
+                  const Spacer(),
+                  // Top Graphic
+                  Center(
+                    child: FadeInDown(
+                      duration: const Duration(milliseconds: 800),
+                      child: const CampusLogo(
+                        size: 90,
+                        color: Colors.white,
                       ),
-                      child: Ink(
-                        // decoration: BoxDecoration(
-                        //   gradient: const LinearGradient(
-                        //     colors: [
-                           
-                        //     ],
-                        //     begin: Alignment.centerLeft,
-                        //     end: Alignment.centerRight,
-                        //   ),
-                        //   borderRadius: BorderRadius.circular(10),
-                        // ),
-                        child: Container(
-                          alignment: Alignment.center,
-                          child:  Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Get Started',
-                                  style:GoogleFonts.outfitTextTheme(Theme.of(context).textTheme).bodyMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  
-                                  // style: TextStyle(
-                                  //  color: Colors.white,
-                                  //   fontSize: 15,
-                                  //   fontWeight: FontWeight.w500,
-                                  // ),
-                                ),
-                                SizedBox(width: 10),
-                               Row(
-                                children: [
-                                  Icon(Icons.arrow_forward, color: Colors.white, size: 18),
-                                ],
-                               )
-                              ],
-                            ),
+                    ),
+                  ),
+                  const Spacer(flex: 2),
+
+                  // Text Content
+                  FadeInUp(
+                    delay: const Duration(milliseconds: 200),
+                    child: Text(
+                      'Welcome to',
+                      style: GoogleFonts.outfit(
+                        color: Colors.white70,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  FadeInUp(
+                    delay: const Duration(milliseconds: 400),
+                    child: Text(
+                      'Your Campus,\nReimagined.',
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontSize: 35,
+                        fontWeight: FontWeight.w800,
+                        height: 1.1,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  FadeInUp(
+                    delay: const Duration(milliseconds: 600),
+                    child: Text(
+                      'The all-in-one platform for driving academic excellence and campus connectivity.',
+                      style: GoogleFonts.outfit(
+                        color: Colors.white60,
+                        fontSize: 16,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+
+                  // Action Button
+                  FadeInUp(
+                    delay: const Duration(milliseconds: 800),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                              context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
+                          elevation: 4,
+                          shadowColor: AppTheme.secondaryColor.withOpacity(0.5),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Get Started',
+                              style: GoogleFonts.outfit(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryColor
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
