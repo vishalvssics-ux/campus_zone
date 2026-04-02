@@ -5,6 +5,7 @@ import '../../providers/bus_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:campus_zone_user/utils/app_theme.dart';
+import 'dart:async';
 
 class TripScreen extends StatefulWidget {
   const TripScreen({super.key});
@@ -16,6 +17,7 @@ class TripScreen extends StatefulWidget {
 class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateMixin {
   bool _isActionLoading = false;
   late AnimationController _pulseController;
+  StreamSubscription<Position>? _locationSubscription;
 
   @override
   void initState() {
@@ -28,15 +30,49 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final user = Provider.of<AuthProvider>(context, listen: false).user;
       if (user != null) {
-        Provider.of<BusProvider>(context, listen: false).syncTripStatus(user.id);
+        final bus = Provider.of<BusProvider>(context, listen: false);
+        bus.syncTripStatus(user.id).then((_) {
+          if (bus.isTripActive) {
+            _startLocationUpdates(user.id);
+          }
+        });
       }
     });
   }
 
   @override
   void dispose() {
+    _stopLocationUpdates();
     _pulseController.dispose();
     super.dispose();
+  }
+
+  void _startLocationUpdates(String driverId) {
+    _locationSubscription?.cancel();
+    
+    // Configure location settings for background/continuous tracking if needed
+    // For now, we use high accuracy and 10 meters distance filter
+    const locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10, 
+    );
+
+    _locationSubscription = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+      (Position position) {
+        if (mounted) {
+          Provider.of<BusProvider>(context, listen: false)
+              .updateLocation(driverId, position.latitude, position.longitude);
+        }
+      },
+      onError: (e) {
+        debugPrint("Location Stream Error: $e");
+      },
+    );
+  }
+
+  void _stopLocationUpdates() {
+    _locationSubscription?.cancel();
+    _locationSubscription = null;
   }
 
   Future<Position?> _getCurrentLocation() async {
@@ -85,6 +121,9 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
         if (position != null) {
           await Provider.of<BusProvider>(context, listen: false)
               .startTrip(user.id, position.latitude, position.longitude);
+          
+          _startLocationUpdates(user.id);
+          
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Trip Started Successfully!'), backgroundColor: Colors.green),
@@ -93,6 +132,7 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
         }
       } else {
         // Stop Trip
+        _stopLocationUpdates();
         await Provider.of<BusProvider>(context, listen: false).endTrip(user.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

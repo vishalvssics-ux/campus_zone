@@ -205,6 +205,20 @@ class BusProvider extends ChangeNotifier {
     }
   }
 
+  // DRIVER: Update Live Location
+  Future<void> updateLocation(String driverId, double lat, double lng) async {
+    // We use a silent update (don't show loading spinner) for better UX during streaming
+    try {
+      await _api.post('/bus/update-location', {
+        'driverId': driverId, 
+        'lat': lat, 
+        'lng': lng
+      });
+    } catch (e) {
+      debugPrint('Silent Location Update Failed: $e');
+    }
+  }
+
   // DRIVER: Remove Passenger
   Future<void> removePassenger(String driverId, String passengerId) async {
     await _performAction(() async {
